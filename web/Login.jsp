@@ -1,4 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<jsp:useBean id="now" class="java.util.Date" scope="request"/>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -40,14 +43,31 @@
         <i class="bi bi-box-arrow-in-right"></i> Ingresar
       </button>
 
-      <p class="error-msg">
-        <%= request.getAttribute("msg") == null ? "" : request.getAttribute("msg") %>
-      </p>
+      <c:set var="mensajeError" value="${requestScope.errorMessage}" />
+      <c:if test="${empty mensajeError}">
+        <c:choose>
+          <c:when test="${param.error == 'session'}">
+            <c:set var="mensajeError" value="Tu sesión ha expirado. Vuelve a iniciar sesión." />
+          </c:when>
+          <c:when test="${param.error == 'forbidden'}">
+            <c:set var="mensajeError" value="No cuentas con permisos para acceder a la sección solicitada." />
+          </c:when>
+        </c:choose>
+      </c:if>
+      <c:if test="${not empty param.logout}">
+        <c:set var="mensajeExito" value="Se cerró tu sesión correctamente." />
+      </c:if>
+      <c:if test="${not empty mensajeError}">
+        <p class="error-msg">${mensajeError}</p>
+      </c:if>
+      <c:if test="${not empty mensajeExito}">
+        <p class="text-success text-center">${mensajeExito}</p>
+      </c:if>
     </form>
   </div>
 
   <footer>
-    © <%= java.time.Year.now() %> Electrosur — Sistema de Boletas de Permiso
+    © <fmt:formatDate value="${now}" pattern="yyyy" /> Electrosur — Sistema de Boletas de Permiso
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

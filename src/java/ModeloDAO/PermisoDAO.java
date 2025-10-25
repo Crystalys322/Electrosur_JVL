@@ -2,6 +2,7 @@ package ModeloDAO;
 
 import Config.ClsConexion;
 import Interfaces.CRUDPermiso;
+import Logging.AppLogger;
 import Modelo.ClsAprobacion;
 import Modelo.ClsPermiso;
 
@@ -9,8 +10,11 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class PermisoDAO implements CRUDPermiso {
+    private static final Logger LOGGER = AppLogger.getLogger(PermisoDAO.class);
     private final ClsConexion cn = new ClsConexion();
 
     @Override
@@ -31,7 +35,9 @@ public class PermisoDAO implements CRUDPermiso {
             try (ResultSet rs = ps.getGeneratedKeys()) {
                 if (rs.next()) return rs.getLong(1);
             }
-        } catch (Exception ex) { ex.printStackTrace(); }
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "Error al crear permiso", ex);
+        }
         return -1;
     }
 
@@ -51,7 +57,9 @@ public class PermisoDAO implements CRUDPermiso {
                 double minutos = rs.getDouble("minutos");
                 return minutos / 60.0; // horas
             }
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Error al obtener horas acumuladas", e);
+        }
         return 0.0;
     }
 
@@ -63,7 +71,9 @@ public class PermisoDAO implements CRUDPermiso {
             ps.setLong(1, idPermiso);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) return map(rs);
-        } catch (Exception ex) { ex.printStackTrace(); }
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "Error al obtener permiso", ex);
+        }
         return null;
     }
 
@@ -76,7 +86,9 @@ public class PermisoDAO implements CRUDPermiso {
             ps.setInt(1, idEmpleado);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) lista.add(map(rs));
-        } catch (Exception ex) { ex.printStackTrace(); }
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "Error al listar permisos por empleado", ex);
+        }
         return lista;
     }
 
@@ -96,7 +108,9 @@ public class PermisoDAO implements CRUDPermiso {
             ps.setInt(1, idJefeArea);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) lista.add(map(rs));
-        } catch (Exception ex) { ex.printStackTrace(); }
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "Error al listar permisos para jefe", ex);
+        }
         return lista;
     }
 
@@ -108,7 +122,9 @@ public class PermisoDAO implements CRUDPermiso {
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) lista.add(map(rs));
-        } catch (Exception ex) { ex.printStackTrace(); }
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "Error al listar permisos para RRHH", ex);
+        }
         return lista;
     }
 
@@ -159,7 +175,7 @@ public class PermisoDAO implements CRUDPermiso {
             return actualizarEstado(a.getIdPermiso(), nuevoEstado, obs);
 
         } catch (Exception ex) {
-            ex.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error al registrar aprobación", ex);
         }
         return false;
     }
@@ -174,7 +190,9 @@ public class PermisoDAO implements CRUDPermiso {
             else ps.setString(2, obsDenegacion);
             ps.setLong(3, idPermiso);
             return ps.executeUpdate() > 0;
-        } catch (Exception ex) { ex.printStackTrace(); }
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "Error al actualizar estado del permiso", ex);
+        }
         return false;
     }
 
@@ -210,7 +228,9 @@ public class PermisoDAO implements CRUDPermiso {
                 }
             }
             return ok;
-        } catch (Exception ex) { ex.printStackTrace(); }
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "Error al registrar ejecución del permiso", ex);
+        }
         return false;
     }
 

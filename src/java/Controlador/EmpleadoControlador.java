@@ -1,5 +1,6 @@
 package Controlador;
 
+import Logging.AppLogger;
 import Modelo.ClsEmpleado;
 import ModeloDAO.EmpleadoDAO;
 
@@ -7,10 +8,13 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @WebServlet(name="EmpleadoControlador", urlPatterns={"/empleado"})
 public class EmpleadoControlador extends HttpServlet {
     private final EmpleadoDAO dao = new EmpleadoDAO();
+    private static final Logger LOGGER = AppLogger.getLogger(EmpleadoControlador.class);
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -31,7 +35,7 @@ public class EmpleadoControlador extends HttpServlet {
                 resp.sendRedirect("empleados.jsp?ok=1");
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error en la acción de empleado", ex);
             resp.sendRedirect("error.jsp");
         }
     }

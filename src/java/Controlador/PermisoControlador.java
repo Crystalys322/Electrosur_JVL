@@ -1,9 +1,11 @@
 package Controlador;
 
+import DTO.UsuarioDTO;
+import Logging.AppLogger;
 import Modelo.ClsAprobacion;
 import Modelo.ClsPermiso;
-import Modelo.ClsUsuario;
 import ModeloDAO.PermisoDAO;
+import Security.SessionValidator;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -12,15 +14,22 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @WebServlet(name="PermisoControlador", urlPatterns={"/permiso"})
 public class PermisoControlador extends HttpServlet {
     private final PermisoDAO permisoDAO = new PermisoDAO();
+    private static final Logger LOGGER = AppLogger.getLogger(PermisoControlador.class);
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String accion = req.getParameter("accion");
-        ClsUsuario sesUser = (ClsUsuario) req.getSession().getAttribute("usuario");
+        if (!SessionValidator.hasValidSession(req)) {
+            resp.sendRedirect("Login.jsp?error=session");
+            return;
+        }
+        UsuarioDTO sesUser = (UsuarioDTO) req.getSession().getAttribute("usuario");
 
         try {
             switch (accion) {
@@ -64,7 +73,7 @@ public class PermisoControlador extends HttpServlet {
                     break;
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Error procesando acción de permisos", ex);
             resp.sendRedirect("error.jsp");
         }
     }

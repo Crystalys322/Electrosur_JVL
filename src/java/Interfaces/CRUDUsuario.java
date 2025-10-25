@@ -2,10 +2,15 @@ package Interfaces;
 
 import Modelo.ClsUsuario;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Optional;
+
 public interface CRUDUsuario {
-    ClsUsuario validarLogin(String username, String passwordPlano); // compara contra hash
-    ClsUsuario obtenerPorId(int idUsuario);
-    boolean crear(ClsUsuario u);
-    boolean actualizar(ClsUsuario u);
-    boolean eliminar(int idUsuario);
+    Optional<ClsUsuario> findByUsername(Connection connection, String username) throws SQLException;
+    Optional<ClsUsuario> findById(Connection connection, int idUsuario) throws SQLException;
+    boolean crear(Connection connection, ClsUsuario u) throws SQLException;
+    boolean actualizar(Connection connection, ClsUsuario u) throws SQLException;
+    boolean eliminar(Connection connection, int idUsuario) throws SQLException;
+    void actualizarUltimoLogin(Connection connection, int idUsuario) throws SQLException;
 }

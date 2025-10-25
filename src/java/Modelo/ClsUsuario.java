@@ -16,6 +16,7 @@ public class ClsUsuario {
     private String passHash;  // guarda hash
     private int idRol;
     private boolean estado;
+    private java.time.LocalDateTime ultimoLogin;
 
     public ClsUsuario() {
     }
@@ -75,6 +76,14 @@ public class ClsUsuario {
 
     public void setEstado(boolean estado) {
         this.estado = estado;
+    }
+
+    public java.time.LocalDateTime getUltimoLogin() {
+        return ultimoLogin;
+    }
+
+    public void setUltimoLogin(java.time.LocalDateTime ultimoLogin) {
+        this.ultimoLogin = ultimoLogin;
     }
 
     
