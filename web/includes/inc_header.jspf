@@ -1,0 +1,14 @@
+<%@ page contentType="text/html; charset=UTF-8" %>
+<%@ page import="Modelo.ClsUsuario" %>
+<%
+  ClsUsuario _user = (ClsUsuario) session.getAttribute("usuario");
+  if (_user == null) { response.sendRedirect("../Login.jsp"); return; }
+%>
+<link rel="stylesheet" href="../assets/styles.css">
+<div class="topbar">
+  <strong>Electrosur</strong>
+  <div style="flex:1"></div>
+  <span><%= _user.getUsername() %></span>
+  <a class="btn" href="../Logout.jsp">Salir</a>
+</div>
+<div class="wrap">
