@@ -1,14 +1,19 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
-<%@ page import="Modelo.ClsUsuario" %>
-<%
-  ClsUsuario _user = (ClsUsuario) session.getAttribute("usuario");
-  if (_user == null) { response.sendRedirect("../Login.jsp"); return; }
-%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<c:set var="usuarioSesion" value="${sessionScope.usuario}" />
+<c:if test="${empty usuarioSesion}">
+  <c:redirect url="${pageContext.request.contextPath}/Login.jsp">
+    <c:param name="error" value="session" />
+  </c:redirect>
+</c:if>
 <link rel="stylesheet" href="../assets/styles.css">
 <div class="topbar">
   <strong>Electrosur</strong>
   <div style="flex:1"></div>
-  <span><%= _user.getUsername() %></span>
-  <a class="btn" href="../Logout.jsp">Salir</a>
+  <span>${usuarioSesion.username}</span>
+  <form method="post" action="${pageContext.request.contextPath}/usuario" class="d-inline">
+    <input type="hidden" name="accion" value="logout">
+    <button type="submit" class="btn btn-link p-0">Salir</button>
+  </form>
 </div>
 <div class="wrap">

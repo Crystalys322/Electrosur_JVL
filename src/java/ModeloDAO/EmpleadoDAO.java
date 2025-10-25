@@ -2,13 +2,17 @@ package ModeloDAO;
 
 import Config.ClsConexion;
 import Interfaces.CRUDEmpleado;
+import Logging.AppLogger;
 import Modelo.ClsEmpleado;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class EmpleadoDAO implements CRUDEmpleado {
+    private static final Logger LOGGER = AppLogger.getLogger(EmpleadoDAO.class);
     private final ClsConexion cn = new ClsConexion();
 
     @Override
@@ -19,7 +23,9 @@ public class EmpleadoDAO implements CRUDEmpleado {
             ps.setInt(1, idEmpleado);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) return map(rs);
-        } catch (Exception ex) { ex.printStackTrace(); }
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "Error al obtener empleado por ID", ex);
+        }
         return null;
     }
 
@@ -31,7 +37,9 @@ public class EmpleadoDAO implements CRUDEmpleado {
             ps.setString(1, dni);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) return map(rs);
-        } catch (Exception ex) { ex.printStackTrace(); }
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "Error al obtener empleado por DNI", ex);
+        }
         return null;
     }
 
@@ -43,7 +51,9 @@ public class EmpleadoDAO implements CRUDEmpleado {
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) lista.add(map(rs));
-        } catch (Exception ex) { ex.printStackTrace(); }
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "Error al listar empleados", ex);
+        }
         return lista;
     }
 
@@ -62,7 +72,9 @@ public class EmpleadoDAO implements CRUDEmpleado {
             if (e.getIdJefeInmediato()==null) ps.setNull(7, Types.INTEGER); else ps.setInt(7, e.getIdJefeInmediato());
             ps.setBoolean(8, e.isActivo());
             return ps.executeUpdate() > 0;
-        } catch (Exception ex) { ex.printStackTrace(); }
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "Error al crear empleado", ex);
+        }
         return false;
     }
 
@@ -83,7 +95,9 @@ public class EmpleadoDAO implements CRUDEmpleado {
             ps.setInt(9, e.getReincidenteCount());
             ps.setInt(10, e.getIdEmpleado());
             return ps.executeUpdate() > 0;
-        } catch (Exception ex) { ex.printStackTrace(); }
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "Error al actualizar empleado", ex);
+        }
         return false;
     }
 
@@ -94,7 +108,9 @@ public class EmpleadoDAO implements CRUDEmpleado {
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, idEmpleado);
             return ps.executeUpdate() > 0;
-        } catch (Exception ex) { ex.printStackTrace(); }
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "Error al eliminar empleado", ex);
+        }
         return false;
     }
 
