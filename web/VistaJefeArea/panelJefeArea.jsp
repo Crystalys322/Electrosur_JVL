@@ -7,6 +7,10 @@
 <c:set var="lista" value="${permisoDAO.listarPendientesParaJefeArea(usuarioSesion.idEmpleado)}" />
 <div class="card">
   <h3>Permisos pendientes (mi área)</h3>
+  <c:if test="${empty lista}">
+    <p>No tienes boletas pendientes dirigidas a tu aprobación.</p>
+  </c:if>
+  <c:if test="${not empty lista}">
   <table>
     <thead>
       <tr>
@@ -22,7 +26,16 @@
     <c:forEach var="permiso" items="${lista}">
       <tr>
         <td>${permiso.idPermiso}</td>
-        <td>${permiso.idEmpleado}</td>
+        <td>
+          <c:choose>
+            <c:when test="${not empty permiso.nombreEmpleado}">
+              <c:out value="${permiso.nombreEmpleado}" /> (ID ${permiso.idEmpleado})
+            </c:when>
+            <c:otherwise>
+              ID ${permiso.idEmpleado}
+            </c:otherwise>
+          </c:choose>
+        </td>
         <td><c:out value="${permiso.motivo}" /></td>
         <td>${permiso.fechaSalidaPlan} ${permiso.horaSalidaPlan}</td>
         <td>${permiso.fechaRetornoPlan} ${permiso.horaRetornoPlan}</td>
@@ -43,5 +56,6 @@
     </c:forEach>
     </tbody>
   </table>
+  </c:if>
 </div>
 <%@ include file="../includes/inc_footer.jspf" %>

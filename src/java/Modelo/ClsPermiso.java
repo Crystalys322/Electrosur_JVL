@@ -14,6 +14,7 @@ public class ClsPermiso {
     private long idPermiso;
     private int idEmpleado;
     private String dirigidoA; // JEFE_AREA | JEFE_RRHH
+    private String nombreEmpleado; // solo para vistas (join a empleados)
     private String motivo;
     private LocalDate fechaSalidaPlan;
     private LocalTime horaSalidaPlan;
@@ -38,6 +39,15 @@ public class ClsPermiso {
         this.observacionesDenegacion = observacionesDenegacion;
     }
 
+    public ClsPermiso(long idPermiso, int idEmpleado, String dirigidoA, String nombreEmpleado, String motivo,
+                      LocalDate fechaSalidaPlan, LocalTime horaSalidaPlan,
+                      LocalDate fechaRetornoPlan, LocalTime horaRetornoPlan,
+                      String estado, String observacionesDenegacion) {
+        this(idPermiso, idEmpleado, dirigidoA, motivo, fechaSalidaPlan, horaSalidaPlan,
+                fechaRetornoPlan, horaRetornoPlan, estado, observacionesDenegacion);
+        this.nombreEmpleado = nombreEmpleado;
+    }
+
     public long getIdPermiso() {
         return idPermiso;
     }
@@ -60,6 +70,14 @@ public class ClsPermiso {
 
     public void setDirigidoA(String dirigidoA) {
         this.dirigidoA = dirigidoA;
+    }
+
+    public String getNombreEmpleado() {
+        return nombreEmpleado;
+    }
+
+    public void setNombreEmpleado(String nombreEmpleado) {
+        this.nombreEmpleado = nombreEmpleado;
     }
 
     public String getMotivo() {
