@@ -80,7 +80,10 @@ public class PermisoDAO implements CRUDPermiso {
     @Override
     public List<ClsPermiso> listarPorEmpleado(int idEmpleado) {
         List<ClsPermiso> lista = new ArrayList<>();
-        String sql = "SELECT * FROM permisos WHERE id_empleado=? ORDER BY creado_en DESC";
+        String sql = "SELECT p.*, CONCAT(e.nombres, ' ', e.apellidos) AS nombre_empleado " +
+                "FROM permisos p " +
+                "JOIN empleados e ON e.id_empleado = p.id_empleado " +
+                "WHERE p.id_empleado=? ORDER BY p.creado_en DESC";
         try (Connection con = cn.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, idEmpleado);
@@ -96,11 +99,13 @@ public class PermisoDAO implements CRUDPermiso {
     public List<ClsPermiso> listarPendientesParaJefeArea(int idJefeArea) {
         List<ClsPermiso> lista = new ArrayList<>();
         String sql = """
-            SELECT p.* FROM permisos p
+            SELECT p.*, CONCAT(e.nombres, ' ', e.apellidos) AS nombre_empleado
+            FROM permisos p
             JOIN empleados e ON e.id_empleado = p.id_empleado
             JOIN empleados jefe ON jefe.id_empleado = ?
             WHERE e.id_area = jefe.id_area
               AND p.estado = 'ENVIADO'
+              AND p.dirigido_a = 'JEFE_AREA'
             ORDER BY p.creado_en DESC
         """;
         try (Connection con = cn.getConnection();
@@ -117,7 +122,14 @@ public class PermisoDAO implements CRUDPermiso {
     @Override
     public List<ClsPermiso> listarPendientesParaRRHH() {
         List<ClsPermiso> lista = new ArrayList<>();
-        String sql = "SELECT * FROM permisos WHERE estado IN ('APROB_JEFE','ENVIADO') ORDER BY creado_en DESC";
+        String sql = """
+            SELECT p.*, CONCAT(e.nombres, ' ', e.apellidos) AS nombre_empleado
+            FROM permisos p
+            JOIN empleados e ON e.id_empleado = p.id_empleado
+            WHERE p.estado = 'APROB_JEFE'
+               OR (p.estado = 'ENVIADO' AND p.dirigido_a = 'JEFE_RRHH')
+            ORDER BY p.creado_en DESC
+        """;
         try (Connection con = cn.getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
@@ -246,6 +258,24 @@ public class PermisoDAO implements CRUDPermiso {
         p.setHoraRetornoPlan(rs.getTime("hora_retorno_plan").toLocalTime());
         p.setEstado(rs.getString("estado"));
         p.setObservacionesDenegacion(rs.getString("observaciones_denegacion"));
+        if (hasColumn(rs, "nombre_empleado")) {
+            p.setNombreEmpleado(rs.getString("nombre_empleado"));
+        }
         return p;
+    }
+
+    private boolean hasColumn(ResultSet rs, String columnLabel) {
+        try {
+            ResultSetMetaData meta = rs.getMetaData();
+            int columns = meta.getColumnCount();
+            for (int i = 1; i <= columns; i++) {
+                if (columnLabel.equalsIgnoreCase(meta.getColumnLabel(i))) {
+                    return true;
+                }
+            }
+        } catch (SQLException ex) {
+            LOGGER.log(Level.FINE, "No se pudo verificar columna {0}", columnLabel);
+        }
+        return false;
     }
 }

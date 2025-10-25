@@ -12,11 +12,16 @@
 </div>
 
 <div class="card">
+  <c:if test="${empty misPermisos}">
+    <p>Aún no registras boletas de permiso.</p>
+  </c:if>
+  <c:if test="${not empty misPermisos}">
   <table>
     <thead>
       <tr>
         <th>ID</th>
         <th>Motivo</th>
+        <th>Dirigido a</th>
         <th>Salida</th>
         <th>Retorno</th>
         <th>Estado</th>
@@ -55,12 +60,22 @@
       <tr>
         <td>${permiso.idPermiso}</td>
         <td><c:out value="${permiso.motivo}" /></td>
+        <td>
+          <c:choose>
+            <c:when test="${permiso.dirigidoA == 'JEFE_AREA'}">Jefe inmediato</c:when>
+            <c:when test="${permiso.dirigidoA == 'JEFE_RRHH'}">Recursos Humanos</c:when>
+            <c:otherwise>${permiso.dirigidoA}</c:otherwise>
+          </c:choose>
+        </td>
         <td>${permiso.fechaSalidaPlan} ${permiso.horaSalidaPlan}</td>
         <td>${permiso.fechaRetornoPlan} ${permiso.horaRetornoPlan}</td>
         <td style="font-weight:bold;color:${colorEstado};">${estado}</td>
         <td>
           <div>👔 Jefe área: ${firmaJefe}</div>
           <div>🧑‍💼 RR.HH.: ${firmaRRHH}</div>
+          <c:if test="${estado == 'DENEGADO' && not empty permiso.observacionesDenegacion}">
+            <div style="margin-top:4px;color:#a94442;">Motivo: <c:out value="${permiso.observacionesDenegacion}" /></div>
+          </c:if>
         </td>
         <td>
           <c:choose>
@@ -100,6 +115,7 @@
     </c:forEach>
     </tbody>
   </table>
+  </c:if>
 </div>
 
 <%@ include file="../includes/inc_footer.jspf" %>

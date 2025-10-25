@@ -9,11 +9,16 @@
 
 <div class="card">
   <h3 style="margin-bottom:12px;">Permisos pendientes (Recursos Humanos)</h3>
+  <c:if test="${empty lista}">
+    <p>No hay boletas pendientes para revisión.</p>
+  </c:if>
+  <c:if test="${not empty lista}">
   <table>
     <thead>
       <tr>
         <th>ID</th>
         <th>Empleado</th>
+        <th>Dirigido a</th>
         <th>Motivo</th>
         <th>Salida</th>
         <th>Retorno</th>
@@ -28,7 +33,23 @@
       <c:set var="excede" value="${horas > 50.0}" />
       <tr>
         <td>${permiso.idPermiso}</td>
-        <td>${permiso.idEmpleado}</td>
+        <td>
+          <c:choose>
+            <c:when test="${not empty permiso.nombreEmpleado}">
+              <c:out value="${permiso.nombreEmpleado}" /> (ID ${permiso.idEmpleado})
+            </c:when>
+            <c:otherwise>
+              ID ${permiso.idEmpleado}
+            </c:otherwise>
+          </c:choose>
+        </td>
+        <td>
+          <c:choose>
+            <c:when test="${permiso.dirigidoA == 'JEFE_AREA'}">Jefe inmediato</c:when>
+            <c:when test="${permiso.dirigidoA == 'JEFE_RRHH'}">Recursos Humanos</c:when>
+            <c:otherwise>${permiso.dirigidoA}</c:otherwise>
+          </c:choose>
+        </td>
         <td><c:out value="${permiso.motivo}" /></td>
         <td>${permiso.fechaSalidaPlan} ${permiso.horaSalidaPlan}</td>
         <td>${permiso.fechaRetornoPlan} ${permiso.horaRetornoPlan}</td>
@@ -59,6 +80,7 @@
     </c:forEach>
     </tbody>
   </table>
+  </c:if>
 </div>
 
 <%@ include file="../includes/inc_footer.jspf" %>
